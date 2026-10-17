@@ -21,8 +21,8 @@
 <body>
 
     <div class="container">
-        <a href="index.html" class="back-btn">← Bumalik sa Login</a>
-        <h2>Admin Dashboard - Listahan at Pag-Karga sa Players</h2>
+        <a href="index.html" class="back-btn">← back to log in</a>
+        <h2>Admin Dashboard - CASH IN ADMIN</h2>
         
         <table>
             <thead>
@@ -30,13 +30,13 @@
                     <th>Username</th>
                     <th>Password</th>
                     <th>Balance</th>
-                    <th>Aksyon (Dagdag Karga)</th>
-                    <th>Petsa ng Pag-Sign Up</th>
+                    <th>cash in</th>
+                    <th>date create</th>
                 </tr>
             </thead>
             <tbody id="playerTableBody">
                 <tr>
-                    <td colspan="5" style="text-align: center;">Kinukuha ang mga datos mula sa database...</td>
+                    <td colspan="5" style="text-align: center;">GO...</td>
                 </tr>
             </tbody>
         </table>
@@ -66,7 +66,7 @@
                 tableBody.innerHTML = "";
 
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Wala pang nag-sign up.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">NOT AVAILABLE.</td></tr>`;
                     return;
                 }
 
@@ -80,8 +80,8 @@
                         <td>${data.password || 'N/A'}</td>
                         <td style="font-weight: bold; color: #2d3436;">₱${currentBalance.toLocaleString()}</td>
                         <td>
-                            <button class="karga-btn" onclick="addBalance('${documento.id}', 500)">+₱500</button>
-                            <button class="karga-btn" style="background:#0984e3;" onclick="addBalance('${documento.id}', 1000)">+₱1,000</button>
+                            <button class="karga-btn" onclick="addBalance('${documento.id}', 5)">+₱5</button>
+                            <button class="karga-btn" style="background:#0984e3;" onclick="addBalance('${documento.id}', 10)">+₱10</button>
                         </td>
                         <td>${dateFormatted}</td>
                     </tr>`;
@@ -89,7 +89,7 @@
                 });
             } catch (error) {
                 console.error("Error sa pagkuha ng data: ", error);
-                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">May suliranin sa pagkonekta sa database.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">warning...</td></tr>`;
             }
         }
 
