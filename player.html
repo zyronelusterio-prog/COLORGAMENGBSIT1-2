@@ -3,22 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Game - Roleta Lobby</title>
+    <title>Color Game - Dice Lobby</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; text-align: center; }
-        .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; margin: 0 auto; }
+        .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 480px; margin: 0 auto; }
         h1 { color: #0984e3; margin-top: 0; font-size: 1.5rem; }
         .balance-box { background: #e17055; color: white; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 15px 0; }
         
-        
-        .box-container { position: relative; width: 280px; height: 280px; margin: 0 auto 15px auto; }
-        canvas { width: 100%; height: 100%; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); }
-        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #d63031; z-index: 10; }
+        /* 3 Dice Boxes Style */
+        .dice-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .dice-box { 
+            width: 80px; height: 80px; border-radius: 12px; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 1.2rem; font-weight: bold; color: white; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.15); 
+            background-color: #2d3436; text-shadow: 1px 1px 2px black;
+            transition: transform 0.1s linear;
+        }
 
-        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-        .color-box { height: 50px; border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.9rem; border: 3px solid transparent; text-shadow: 1px 1px 2px black; }
-        .color-box.selected { border-color: #2d3436; transform: scale(1.05); }
+        /* Color Betting Grid (Box Style) */
+        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .color-card { border-radius: 8px; padding: 10px 5px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-shadow: 1px 1px 2px black; }
+        .color-card label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.9rem; }
+        .bet-input-box { width: 80%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-size: 0.9rem; font-weight: bold; box-sizing: border-box; }
 
+        /* Kulay ng mga Box */
         .red { background-color: #d63031; }
         .blue { background-color: #0984e3; }
         .yellow { background-color: #fdcb6e; color: #333 !important; text-shadow: none !important; }
@@ -26,9 +35,9 @@
         .pink { background-color: #e84393; }
         .white { background-color: #b2bec3; color: #333 !important; text-shadow: none !important; }
 
-        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
         .btn-roll:hover { background: #5b4bc4; }
-        .bet-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin: 8px 0; text-align: center; font-size: 1rem; box-sizing: border-box; }
+        .btn-roll:disabled { background: #b2bec3; cursor: not-allowed; }
         .logout-btn { display: inline-block; margin-top: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
     </style>
 </head>
@@ -41,27 +50,44 @@
             BALANCE: <span id="playerBalance">₱0</span>
         </div>
 
-        <!-- Mismong Roleta -->
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <canvas id="wheelCanvas" width="300" height="300"></canvas>
+        <!-- 3 Dice Boxes -->
+        <div class="dice-container">
+            <div class="dice-box" id="dice1">?</div>
+            <div class="dice-box" id="dice2">?</div>
+            <div class="dice-box" id="dice3">?</div>
         </div>
 
-        <div>
-            <label style="font-weight: bold; color: #555;">AMOUNT:</label>
-            <input type="number" id="betAmount" class="bet-input" placeholder="BET" min="1">
-        </div>
-
-        <div style="font-weight: bold; color: #555; margin-top: 10px; text-align: left;">CHOOSE COLOR:</div>
+        <div style="font-weight: bold; color: #555; margin-top: 10px; text-align: left;">ILAGAY ANG TAYA SA MGA KULAY:</div>
+        
+        <!-- Multi-Bet Color Boxes -->
         <div class="color-grid">
-            <div class="color-box red" onclick="selectColor('Pula', this)">RED</div>
-            <div class="color-box blue" onclick="selectColor('Asul', this)">BLUE</div>
-            <div class="color-box yellow" onclick="selectColor('Dilaw', this)">YELLOW</div>
-            <div class="color-box green" onclick="selectColor('Berde', this)">GREEN</div>
-            <div class="color-box white" onclick="selectColor('Puti', this)">WHITE</div>
+            <div class="color-card red">
+                <label>RED</label>
+                <input type="number" class="bet-input-box color-bet" data-color="RED" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card blue">
+                <label>BLUE</label>
+                <input type="number" class="bet-input-box color-bet" data-color="BLUE" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card yellow">
+                <label>YELLOW</label>
+                <input type="number" class="bet-input-box color-bet" data-color="YELLOW" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card green">
+                <label>GREEN</label>
+                <input type="number" class="bet-input-box color-bet" data-color="GREEN" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card pink">
+                <label>PINK</label>
+                <input type="number" class="bet-input-box color-bet" data-color="PINK" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card white">
+                <label>WHITE</label>
+                <input type="number" class="bet-input-box color-bet" data-color="WHITE" placeholder="₱0" min="0">
+            </div>
         </div>
 
-        <button class="btn-roll" id="rollBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+        <button class="btn-roll" id="rollBtn" onclick="rollDice()">ROLL DICE</button>
 
         <div>
             <a href="index.html" class="logout-btn" onclick="logout()">Log Out</a>
@@ -70,142 +96,4 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
-            authDomain: "colorgame-9e835.firebaseapp.com",
-            projectId: "colorgame-9e835",
-            storageBucket: "colorgame-9e835.firebasestorage.app",
-            messagingSenderId: "246164893744",
-            appId: "1:246164893744:web:eb6f326e958a89d13dbdf5",
-            measurementId: "G-Q59RJCZPC"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const loggedId = localStorage.getItem("loggedPlayerId");
-        const loggedUser = localStorage.getItem("loggedUsername");
-
-        let currentBalance =0;
-        let selectedColor = "";
-        let currentRotation = 0;
-
-        const sectors = [
-            { name: "YELLOW", color: "#fdcb6e" },
-            { name: "GREEN", color: "#00b894" },
-            { name: "RED", color: "#e84393" },
-            { name: "WHITE", color: "#b2bec3" },
-            { name: "BLUE", color: "#0984e3" },
-        
-        ];
-
-        const canvas = document.getElementById("wheelCanvas");
-        const ctx = canvas.getContext("2d");
-        const arcSize = (2 * Math.PI) / sectors.length;
-
-        function drawWheel() {
-            const radius = canvas.width / 2;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            sectors.forEach((sector, i) => {
-                const angle = i * arcSize;
-                ctx.beginPath();
-                ctx.fillStyle = sector.color;
-                ctx.moveTo(radius, radius);
-                ctx.arc(radius, radius, radius, angle, angle + arcSize);
-                ctx.lineTo(radius, radius);
-                ctx.fill();
-                ctx.save();
-
-                // Pagsusulat ng pangalan ng kulay sa roleta
-                ctx.translate(radius, radius);
-                ctx.rotate(angle + arcSize / 2);
-                ctx.textAlign = "right";
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 12px Arial";
-                ctx.fillText(sector.name, radius - 15, 6);
-                ctx.restore();
-            });
-        }
-
-        drawWheel();
-
-        if (loggedUser) {
-            document.getElementById("welcomeUser").innerText = "Roleta - " + loggedUser;
-        }
-
-        if (loggedId) {
-            onSnapshot(doc(db, "players", loggedId), (docSnap) => {
-                if (docSnap.exists()) {
-                    currentBalance = docSnap.data().balance || 0;
-                    document.getElementById("playerBalance").innerText = "₱" + currentBalance.toLocaleString();
-                }
-            });
-        }
-
-        window.selectColor = function(colorName, element) {
-            selectedColor = colorName;
-            document.querySelectorAll('.color-box').forEach(box => box.classList.remove('selected'));
-            element.classList.add('selected');
-        };
-
-        window.spinWheel = async function() {
-            const betInput = document.getElementById("betAmount");
-            const betAmount = parseInt(betInput.value);
-
-            if (!selectedColor) {
-                alert("select color!");
-                return;
-            }
-            if (!betAmount || betAmount <= 0) {
-                alert("BET AMOUNT!");
-                return;
-            }
-            if (betAmount > currentBalance) {
-                alert("Kulang ang iyong pondo / balance!");
-                return;
-            }
-
-            const rollBtn = document.getElementById("rollBtn");
-            rollBtn.disabled = true;
-
-           
-            const randomSectorIndex = Math.floor(Math.random() * sectors.length);
-            const degreesPerSector = 280 / sectors.length;
-            
-            // Kalkulasyon para tumapat sa tuktok ang piniling sektor
-            const extraSpins = 5 * 280; 
-            const targetDegree = extraSpins + (280 - (randomSectorIndex * degreesPerSector + degreesPerSector / 2));
-            
-            currentRotation += targetDegree;
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(async () => {
-                const winningColor = sectors[randomSectorIndex].name;
-                const playerRef = doc(db, "players", loggedId);
-
-                if (winningColor === selectedColor) {
-                    const winAmount = betAmount * 2; // Doble ang panalo
-                    await updateDoc(playerRef, {
-                        balance: increment(winAmount)
-                    });
-                    alert(`WIN ${winningColor}. Nanalo ka ng ₱${winAmount}!`);
-                } else {
-                    await updateDoc(playerRef, {
-                        balance: increment(-betAmount)
-                    });
-                    alert(`LOSE Tumapat sa ${winningColor}. Nabawasan ka ng ₱${betAmount}.`);
-                }
-
-                rollBtn.disabled = false;
-            }, 4000); // Tutugma sa 4 seconds transition sa CSS
-        };
-
-        window.logout = function() {
-            localStorage.clear();
-        };
-    </script>
-</body>
-</html>
+        import { getFirestore, doc, onSnapshot, updateDoc, increment } from "
