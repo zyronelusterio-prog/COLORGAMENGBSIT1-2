@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Game - Login / Register</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+        }
+        h2 { text-align: center; color: #333; margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 10px; background: #0984e3; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn:hover { background: #074b83; }
+        .toggle-text { text-align: center; margin-top: 15px; font-size: 0.9rem; color: #666; }
+        .toggle-text a { color: #0984e3; cursor: pointer; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="authCard">
+        <h2 id="formTitle">Mag-Sign In</h2>
+        
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Ilagay ang username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Ilagay ang password">
+        </div>
+
+        <button class="btn" id="actionBtn" onclick="handleAuth()">Mag-Sign In</button>
+        
+        <div class="toggle-text">
+            <span id="toggleMsg">Wala pang account?</span> 
+            <a onclick="toggleMode()">Mag-Sign Up</a>
+        </div>
+    </div>
+
+    <script>
+        let isSignUp = false;
+
+        function toggleMode() {
+            isSignUp = !isSignUp;
+            document.getElementById('formTitle').innerText = isSignUp ? 'Gumawa ng Account' : 'Mag-Sign In';
+            document.getElementById('actionBtn').innerText = isSignUp ? 'Mag-Sign Up' : 'Mag-Sign In';
+            document.getElementById('toggleMsg').innerText = isSignUp ? 'May account na ba?' : 'Wala pang account?';
+            document.querySelector('.toggle-text a').innerText = isSignUp ? 'Mag-Sign In' : 'Mag-Sign Up';
+        }
+
+        function handleAuth() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if (!user || !pass) {
+                alert("Mangyaring punan ang lahat ng field.");
+                return;
+            }
+
+            // Special Account para sa Admin (Ikaw)
+            if (user === 'admin' && pass === 'admin123') {
+                localStorage.setItem('currentUser', JSON.stringify({ username: 'admin', role: 'admin' }));
+                window.location.href = 'admin.html';
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+
+            if (isSignUp) {
+                if (users[user]) {
+                    alert("May gumagamit na ng username na ito!");
+                    return;
+                }
+                // Save bagong user na may 0 balance
+                users[user] = { password: pass, balance: 0 };
+                localStorage.setItem('users', JSON.stringify(users));
+                alert("Matagumpay ang paggawa ng account! Pwede ka nang mag-sign in.");
+                toggleMode();
+            } else {
+                if (!users[user] || users[user].password !== pass) {
+                    alert("Maling username o password!");
+                    return;
+                }
+                // Login successful para sa player
+                localStorage.setItem('currentUser', JSON.stringify({ username: user, role: 'player', balance: users[user].balance }));
+                window.location.href = 'player.html';
+            }
+        }
+    </script>
+</body>
+</html>
