@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Game - Login / Register</title>
+    <title>Color Game</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -35,7 +35,7 @@
 <body>
 
     <div class="card" id="authCard">
-        <h2 id="formTitle">Mag-Sign In</h2>
+        <h2 id="formTitle">Mag-Sign Up</h2>
         
         <div class="form-group">
             <label>Username</label>
@@ -46,63 +46,71 @@
             <input type="password" id="password" placeholder="Ilagay ang password">
         </div>
 
-        <button class="btn" id="actionBtn" onclick="handleAuth()">Mag-Sign In</button>
+        <button class="btn" id="actionBtn" onclick="handleAuth()">Mag-Sign Up</button>
         
         <div class="toggle-text">
-            <span id="toggleMsg">Wala pang account?</span> 
-            <a onclick="toggleMode()">Mag-Sign Up</a>
+            <span id="toggleMsg">Mayroon nang account?</span>
+            <a onclick="toggleMode()">Mag-sign in</a>
         </div>
     </div>
 
-    <script>
-        let isSignUp = false;
+    <!-- Firebase at Database Connection Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        function toggleMode() {
+        // Ang iyong Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
+            authDomain: "colorgame-9e835.firebaseapp.com",
+            projectId: "colorgame-9e835",
+            storageBucket: "colorgame-9e835.firebasestorage.app",
+            messagingSenderId: "246164893744",
+            appId: "1:246164893744:web:eb6f326e958a89d13dbdf5",
+            measurementId: "G-Q59RJCZPC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Toggle mode kung gusto mo ring lagyan ng Login sa hinaharap
+        let isSignUp = true;
+        window.toggleMode = function() {
             isSignUp = !isSignUp;
-            document.getElementById('formTitle').innerText = isSignUp ? 'Gumawa ng Account' : 'Mag-Sign In';
-            document.getElementById('actionBtn').innerText = isSignUp ? 'Mag-Sign Up' : 'Mag-Sign In';
-            document.getElementById('toggleMsg').innerText = isSignUp ? 'May account na ba?' : 'Wala pang account?';
-            document.querySelector('.toggle-text a').innerText = isSignUp ? 'Mag-Sign In' : 'Mag-Sign Up';
-        }
+            document.getElementById("formTitle").innerText = isSignUp ? "Mag-Sign Up" : "Mag-Sign In";
+            document.getElementById("actionBtn").innerText = isSignUp ? "Mag-Sign Up" : "Mag-Sign In";
+            document.getElementById("toggleMsg").innerText = isSignUp ? "Mayroon nang account?" : "Wala pang account?";
+        };
 
-        function handleAuth() {
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value.trim();
+        // Function para i-save ang data sa Firebase kapag nag-click
+        window.handleAuth = async function() {
+            const usernameInput = document.getElementById("username");
+            const passwordInput = document.getElementById("password");
+            
+            const username = usernameInput ? usernameInput.value.trim() : "";
+            const password = passwordInput ? passwordInput.value.trim() : "";
 
-            if (!user || !pass) {
-                alert("Mangyaring punan ang lahat ng field.");
+            if (!username || !password) {
+                alert("Mangyaring punan ang lahat ng espasyo!");
                 return;
             }
 
-            // Special Account para sa Admin (Ikaw)
-            if (user === 'admin' && pass === 'admin123') {
-                localStorage.setItem('currentUser', JSON.stringify({ username: 'admin', role: 'admin' }));
-                window.location.href = 'admin.html';
-                return;
-            }
+            try {
+                // Isine-save ito sa Firestore database sa collection na "players"
+                await addDoc(collection(db, "players"), {
+                    username: username,
+                    password: password,
+                    createdAt: new Date()
+                });
 
-            let users = JSON.parse(localStorage.getItem('users')) || {};
-
-            if (isSignUp) {
-                if (users[user]) {
-                    alert("May gumagamit na ng username na ito!");
-                    return;
-                }
-                // Save bagong user na may 0 balance
-                users[user] = { password: pass, balance: 0 };
-                localStorage.setItem('users', JSON.stringify(users));
-                alert("Matagumpay ang paggawa ng account! Pwede ka nang mag-sign in.");
-                toggleMode();
-            } else {
-                if (!users[user] || users[user].password !== pass) {
-                    alert("Maling username o password!");
-                    return;
-                }
-                // Login successful para sa player
-                localStorage.setItem('currentUser', JSON.stringify({ username: user, role: 'player', balance: users[user].balance }));
-                window.location.href = 'player.html';
+                alert("Matagumpay ang pag-sign up! Nakaimbak na sa database.");
+                if(usernameInput) usernameInput.value = "";
+                if(passwordInput) passwordInput.value = "";
+            } catch (error) {
+                console.error("Error sa pag-save: ", error);
+                alert("Nagka-problema sa pag-save. Subukan ulit.");
             }
-        }
+        };
     </script>
 </body>
 </html>
