@@ -88,19 +88,18 @@
                     const querySnapshot = await getDocs(q);
 
                     if (!querySnapshot.empty) {
-                        alert("May gumagamit na ng username na ito! Pumili ng iba.");
+                        alert("username done.");
                         return;
                     }
 
-                    // Magse-save ng bagong player na may initial balance na 1000
                     await addDoc(collection(db, "players"), {
                         username: username,
                         password: password,
-                        balance: 1000,
+                        balance: 0,
                         createdAt: new Date()
                     });
 
-                    alert("Matagumpay ang pag-sign up! Mayroon kang initial test balance na ₱1,000.");
+                    alert("CREATE ACCOUNT");
                     toggleMode();
                 } else {
                     const q = query(collection(db, "players"), where("username", "==", username), where("password", "==", password));
@@ -111,7 +110,7 @@
                         return;
                     }
 
-                    // I-save sa session ang kasalukuyang naka-login na player
+                   
                     const userData = querySnapshot.docs[0].data();
                     localStorage.setItem("loggedPlayerId", querySnapshot.docs[0].id);
                     localStorage.setItem("loggedUsername", userData.username);
