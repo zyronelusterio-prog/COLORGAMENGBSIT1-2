@@ -6,7 +6,7 @@
     <title>Color Game - Admin Dashboard</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #333; text-align: center; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
@@ -14,25 +14,29 @@
         tr:nth-child(even) { background-color: #f9f9f9; }
         .back-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
         .back-btn:hover { background: #2d3436; }
+        .karga-btn { padding: 6px 12px; background: #00b894; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-right: 5px; }
+        .karga-btn:hover { background: #00896f; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <a href="index.html" class="back-btn">← Bumalik sa Login</a>
-        <h2>Admin Dashboard - Listahan ng mga Players</h2>
+        <h2>Admin Dashboard - Listahan at Pag-Karga sa Players</h2>
         
         <table>
             <thead>
                 <tr>
                     <th>Username</th>
                     <th>Password</th>
+                    <th>Balance</th>
+                    <th>Aksyon (Dagdag Karga)</th>
                     <th>Petsa ng Pag-Sign Up</th>
                 </tr>
             </thead>
             <tbody id="playerTableBody">
                 <tr>
-                    <td colspan="3" style="text-align: center;">Kinukuha ang mga datos mula sa database...</td>
+                    <td colspan="5" style="text-align: center;">Kinukuha ang mga datos mula sa database...</td>
                 </tr>
             </tbody>
         </table>
@@ -40,7 +44,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
@@ -62,26 +66,46 @@
                 tableBody.innerHTML = "";
 
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Wala pang nag-sign up.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Wala pang nag-sign up.</td></tr>`;
                     return;
                 }
 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
+                querySnapshot.forEach((documento) => {
+                    const data = documento.data();
                     const dateFormatted = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString() : "Wala";
-                    
+                    const currentBalance = data.balance !== undefined ? data.balance : 0;
+
                     const row = `<tr>
                         <td>${data.username || 'N/A'}</td>
                         <td>${data.password || 'N/A'}</td>
+                        <td style="font-weight: bold; color: #2d3436;">₱${currentBalance.toLocaleString()}</td>
+                        <td>
+                            <button class="karga-btn" onclick="addBalance('${documento.id}', 500)">+₱500</button>
+                            <button class="karga-btn" style="background:#0984e3;" onclick="addBalance('${documento.id}', 1000)">+₱1,000</button>
+                        </td>
                         <td>${dateFormatted}</td>
                     </tr>`;
                     tableBody.innerHTML += row;
                 });
             } catch (error) {
                 console.error("Error sa pagkuha ng data: ", error);
-                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: red;">May suliranin sa pagkonekta sa database.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">May suliranin sa pagkonekta sa database.</td></tr>`;
             }
         }
+
+        window.addBalance = async function(userId, amount) {
+            try {
+                const playerRef = doc(db, "players", userId);
+                await updateDoc(playerRef, {
+                    balance: increment(amount)
+                });
+                alert(`Matagumpay na nakarga ang ₱${amount}!`);
+                loadPlayers();
+            } catch (error) {
+                console.error("Error sa pagkarga: ", error);
+                alert("Hindi naisagawa ang pagkarga.");
+            }
+        };
 
         loadPlayers();
     </script>

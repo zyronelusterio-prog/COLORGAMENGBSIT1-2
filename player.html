@@ -5,23 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Game - Player Lobby</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 400px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .card { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 500px; margin: 0 auto; }
         h1 { color: #0984e3; margin-top: 0; }
-        p { color: #555; }
-        .logout-btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #d63031; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
-        .logout-btn:hover { background: #c0392b; }
+        .balance-box { background: #e17055; color: white; padding: 15px; border-radius: 8px; font-size: 1.3rem; font-weight: bold; margin: 20px 0; }
+        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .color-box { height: 80px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; text-shadow: 1px 1px 2px black; font-size: 1.1rem; }
+        .red { background-color: #d63031; }
+        .blue { background-color: #0984e3; }
+        .yellow { background-color: #fdcb6e; }
+        .green { background-color: #00b894; }
+        .pink { background-color: #e84393; }
+        .white { background-color: #b2bec3; }
+        .logout-btn { display: inline-block; margin-top: 25px; padding: 10px 20px; background: #636e72; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
+        .logout-btn:hover { background: #2d3436; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1>Maligayang Pagdating sa Color Game!</h1>
-        <p>Matagumpay kang nakapasok bilang Player.</p>
-        <p style="font-style: italic; color: #666;">(Dito mo ilalagay ang mismong Color Game board at mga kulay sa mga susunod mong pagbabago.)</p>
+        <h1 id="welcomeUser">Maligayang Pagdating!</h1>
+        <p>Naka-login ka bilang Player.</p>
         
-        <a href="index.html" class="logout-btn">Mag-Log Out</a>
+        <div class="balance-box">
+            Kasalukuyang Pondo: <span id="playerBalance">₱0</span>
+        </div>
+
+        <h3>Mga Kulay sa Laro (Test Board)</h3>
+        <div class="color-grid">
+            <div class="color-box red" onclick="placeBet('Pula')">PULA</div>
+            <div class="color-box blue" onclick="placeBet('Asul')">ASUL</div>
+            <div class="color-box yellow" onclick="placeBet('Dilaw')">DILAW</div>
+            <div class="color-box green" onclick="placeBet('Berde')">BERDE</div>
+            <div class="color-box pink" onclick="placeBet('Rosas')">ROSAS</div>
+            <div class="color-box white" onclick="placeBet('Puti')">PUTI</div>
+        </div>
+
+        <a href="index.html" class="logout-btn" onclick="logout()">Mag-Log Out</a>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
+            authDomain: "colorgame-9e835.firebaseapp.com",
+            projectId: "colorgame-9e835",
+            storageBucket: "colorgame-9e835.firebasestorage.app",
+            messagingSenderId: "246164893744",
+            appId: "1:246164893744:web:eb6f326e958a89d13dbdf5",
+            measurementId: "G-Q59RJCZPC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const loggedId = localStorage.getItem("loggedPlayerId");
+        const loggedUser = localStorage.getItem("loggedUsername");
+
+        if (loggedUser) {
+            document.getElementById("welcomeUser").innerText = "Maligayang Pagdating, " + loggedUser + "!";
+        }
+
+        if (loggedId) {
+            // Live Update ng Balance mula sa Database
+            onSnapshot(doc(db, "players", loggedId), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const balance = data.balance !== undefined ? data.balance : 0;
+                    document.getElementById("playerBalance").innerText = "₱" + balance.toLocaleString();
+                }
+            });
+        }
+
+        window.placeBet = function(colorName) {
+            alert("Pumili ka ng kulay na " + colorName + ". I-set up natin ang taya at roleta sa susunod na hakbang!");
+        };
+
+        window.logout = function() {
+            localStorage.clear();
+        };
+    </script>
 </body>
 </html>
