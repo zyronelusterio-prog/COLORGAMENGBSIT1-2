@@ -3,56 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Game - Player Lobby</title>
+    <title>Color Game - Roleta Lobby</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .card { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 500px; margin: 0 auto; }
-        h1 { color: #0984e3; margin-top: 0; }
-        .balance-box { background: #e17055; color: white; padding: 15px; border-radius: 8px; font-size: 1.3rem; font-weight: bold; margin: 20px 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; text-align: center; }
+        .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; margin: 0 auto; }
+        h1 { color: #0984e3; margin-top: 0; font-size: 1.5rem; }
+        .balance-box { background: #e17055; color: white; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 15px 0; }
         
-        /* Display ng 3 Resulta / Dice Roll */
-        .dice-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
-        .dice { width: 80px; height: 80px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; text-shadow: 1px 1px 2px black; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
-        
-        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .color-box { height: 70px; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; text-shadow: 1px 1px 2px black; font-size: 1rem; border: 3px solid transparent; }
+        /* Estilo ng Roleta Canvas */
+        .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto 15px auto; }
+        canvas { width: 100%; height: 100%; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); }
+        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #d63031; z-index: 10; }
+
+        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
+        .color-box { height: 50px; border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.9rem; border: 3px solid transparent; text-shadow: 1px 1px 2px black; }
         .color-box.selected { border-color: #2d3436; transform: scale(1.05); }
 
         .red { background-color: #d63031; }
         .blue { background-color: #0984e3; }
-        .yellow { background-color: #fdcb6e; }
+        .yellow { background-color: #fdcb6e; color: #333 !important; text-shadow: none !important; }
         .green { background-color: #00b894; }
         .pink { background-color: #e84393; }
-        .white { background-color: #b2bec3; }
+        .white { background-color: #b2bec3; color: #333 !important; text-shadow: none !important; }
 
-        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .btn-roll:hover { background: #5b4bc4; }
-        .bet-input { width: 80%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin: 10px 0; text-align: center; font-size: 1rem; }
-        
-        .logout-btn { display: inline-block; margin-top: 25px; padding: 10px 20px; background: #636e72; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
+        .bet-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin: 8px 0; text-align: center; font-size: 1rem; box-sizing: border-box; }
+        .logout-btn { display: inline-block; margin-top: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1 id="welcomeUser">Maligayang Pagdating!</h1>
+        <h1 id="welcomeUser">Color Game Roleta</h1>
         
         <div class="balance-box">
-            Kasalukuyang Pondo: <span id="playerBalance">₱0</span>
+            Pondo: <span id="playerBalance">₱0</span>
         </div>
 
-        <!-- Tatlong Kahon ng Lalabas na Resulta -->
-        <h3>Lumabas na Resulta</h3>
-        <div class="dice-container">
-            <div class="dice white" id="dice1">?</div>
-            <div class="dice white" id="dice2">?</div>
-            <div class="dice white" id="dice3">?</div>
+        <!-- Mismong Roleta -->
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <canvas id="wheelCanvas" width="300" height="300"></canvas>
         </div>
 
-        <!-- Pagtaya at Pagpili ng Kulay -->
-        <h3>Pumili ng Tayaan at Halaga</h3>
-        <input type="number" id="betAmount" class="bet-input" placeholder="Ilagay ang halaga ng taya (hal. 50)" min="1">
-        
+        <div>
+            <label style="font-weight: bold; color: #555;">Halaga ng Taya:</label>
+            <input type="number" id="betAmount" class="bet-input" placeholder="Ilagay ang taya (hal. 50)" min="1">
+        </div>
+
+        <div style="font-weight: bold; color: #555; margin-top: 10px; text-align: left;">Piliin ang Kulay:</div>
         <div class="color-grid">
             <div class="color-box red" onclick="selectColor('Pula', this)">PULA</div>
             <div class="color-box blue" onclick="selectColor('Asul', this)">ASUL</div>
@@ -62,7 +62,7 @@
             <div class="color-box white" onclick="selectColor('Puti', this)">PUTI</div>
         </div>
 
-        <button class="btn-roll" onclick="rollColors()">PAIIKUTIN / I-ROLL</button>
+        <button class="btn-roll" id="rollBtn" onclick="spinWheel()">PAIIKUTIN ANG ROLETA</button>
 
         <div>
             <a href="index.html" class="logout-btn" onclick="logout()">Mag-Log Out</a>
@@ -91,18 +91,52 @@
 
         let currentBalance = 0;
         let selectedColor = "";
+        let currentRotation = 0;
 
-        const colorsList = [
-            { name: "Pula", class: "red" },
-            { name: "Asul", class: "blue" },
-            { name: "Dilaw", class: "yellow" },
-            { name: "Berde", class: "green" },
-            { name: "Rosas", class: "pink" },
-            { name: "Puti", class: "white" }
+        const sectors = [
+            { name: "Pula", color: "#d63031" },
+            { name: "Asul", color: "#0984e3" },
+            { name: "Dilaw", color: "#fdcb6e" },
+            { name: "Berde", color: "#00b894" },
+            { name: "Rosas", color: "#e84393" },
+            { name: "Puti", color: "#b2bec3" },
+            { name: "Pula", color: "#d63031" },
+            { name: "Asul", color: "#0984e3" }
         ];
 
+        const canvas = document.getElementById("wheelCanvas");
+        const ctx = canvas.getContext("2d");
+        const arcSize = (2 * Math.PI) / sectors.length;
+
+        function drawWheel() {
+            const radius = canvas.width / 2;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            sectors.forEach((sector, i) => {
+                const angle = i * arcSize;
+                ctx.beginPath();
+                ctx.fillStyle = sector.color;
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, angle, angle + arcSize);
+                ctx.lineTo(radius, radius);
+                ctx.fill();
+                ctx.save();
+
+                // Pagsusulat ng pangalan ng kulay sa roleta
+                ctx.translate(radius, radius);
+                ctx.rotate(angle + arcSize / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 12px Arial";
+                ctx.fillText(sector.name, radius - 15, 6);
+                ctx.restore();
+            });
+        }
+
+        drawWheel();
+
         if (loggedUser) {
-            document.getElementById("welcomeUser").innerText = "Maligayang Pagdating, " + loggedUser + "!";
+            document.getElementById("welcomeUser").innerText = "Roleta - " + loggedUser;
         }
 
         if (loggedId) {
@@ -120,12 +154,12 @@
             element.classList.add('selected');
         };
 
-        window.rollColors = async function() {
+        window.spinWheel = async function() {
             const betInput = document.getElementById("betAmount");
             const betAmount = parseInt(betInput.value);
 
             if (!selectedColor) {
-                alert("Pumili muna ng kulay na tatayaan!");
+                alert("Pumili muna ng kulay na tatayaan sa ibaba!");
                 return;
             }
             if (!betAmount || betAmount <= 0) {
@@ -137,41 +171,39 @@
                 return;
             }
 
-            // 1. Paikutin ang 3 dice sa pamamagitan ng animation at random selection
-            let rolls = [];
-            for (let i = 0; i < 3; i++) {
-                const randomIndex = Math.floor(Math.random() * colorsList.length);
-                rolls.push(colorsList[randomIndex]);
-            }
+            const rollBtn = document.getElementById("rollBtn");
+            rollBtn.disabled = true;
 
-            // Update ng UI display para sa results
-            document.getElementById("dice1").className = "dice " + rolls[0].class;
-            document.getElementById("dice1").innerText = rolls[0].name;
+            // Pagpili ng random na saklaw para sa iikot ng roleta
+            const randomSectorIndex = Math.floor(Math.random() * sectors.length);
+            const degreesPerSector = 360 / sectors.length;
+            
+            // Kalkulasyon para tumapat sa tuktok ang piniling sektor
+            const extraSpins = 5 * 360; 
+            const targetDegree = extraSpins + (360 - (randomSectorIndex * degreesPerSector + degreesPerSector / 2));
+            
+            currentRotation += targetDegree;
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-            document.getElementById("dice2").className = "dice " + rolls[1].class;
-            document.getElementById("dice2").innerText = rolls[1].name;
+            setTimeout(async () => {
+                const winningColor = sectors[randomSectorIndex].name;
+                const playerRef = doc(db, "players", loggedId);
 
-            document.getElementById("dice3").className = "dice " + rolls[2].class;
-            document.getElementById("dice3").innerText = rolls[3].name;
+                if (winningColor === selectedColor) {
+                    const winAmount = betAmount * 2; // Doble ang panalo
+                    await updateDoc(playerRef, {
+                        balance: increment(winAmount)
+                    });
+                    alert(`NANALO KA! Tumapat sa ${winningColor}. Nanalo ka ng ₱${winAmount}!`);
+                } else {
+                    await updateDoc(playerRef, {
+                        balance: increment(-betAmount)
+                    });
+                    alert(`NATALO KA! Tumapat sa ${winningColor}. Nabawasan ka ng ₱${betAmount}.`);
+                }
 
-            // 2. Bilangin kung ilang beses lumabas ang tinayang kulay
-            const matches = rolls.filter(r => r.name === selectedColor).length;
-
-            // 3. I-kwenta ang panalo o talo
-            const playerRef = doc(db, "players", loggedId);
-
-            if (matches > 0) {
-                const winAmount = betAmount * matches;
-                await updateDoc(playerRef, {
-                    balance: increment(winAmount)
-                });
-                alert(`NANALO KA! Lumabas nang ${matches} beses ang ${selectedColor}. Nanalo ka ng ₱${winAmount}!`);
-            } else {
-                await updateDoc(playerRef, {
-                    balance: increment(-betAmount)
-                });
-                alert(`NATALO KA! Walang lumabas na ${selectedColor}. Nabawasan ka ng ₱${betAmount}.`);
-            }
+                rollBtn.disabled = false;
+            }, 4000); // Tutugma sa 4 seconds transition sa CSS
         };
 
         window.logout = function() {
