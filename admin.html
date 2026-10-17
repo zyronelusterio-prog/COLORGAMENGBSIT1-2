@@ -1,42 +1,47 @@
+Narito ang eksaktong **Admin Panel code** na ginawa at ini-sync para sa bagong **Dice Lobby** na Color Game code mo.
+
+Gamit ang code na ito, direktang makikita sa listahan ang mga estudyante o players, ang kanilang live balance, at mayroon itong **Cash In (Add)** button para madaling makapagkarga ng pondo ang admin na agad ding mag-a-update sa screen ng player.
+
+```html
 <!DOCTYPE html>
 <html lang="tl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Game - Admin BSIT 1-2</title>
+    <title>Color Game - Admin Panel</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #333; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; text-align: center; }
+        .admin-card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+        h1 { color: #0984e3; margin-top: 0; font-size: 1.5rem; }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #0984e3; color: white; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .back-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
-        .back-btn:hover { background: #2d3436; }
-        .karga-btn { padding: 6px 12px; background: #00b894; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-right: 5px; }
-        .karga-btn:hover { background: #00896f; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; font-size: 0.95rem; }
+        th { background-color: #6c5ce7; color: white; }
+        tr:hover { background-color: #f8f9fa; }
+        
+        .cashin-btn { background: #00b894; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .cashin-btn:hover { background: #00a884; }
+        
+        .input-cash { width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-size: 0.9rem; margin-right: 5px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <a href="index.html" class="back-btn">← back to log in</a>
-        <h2>Admin Dashboard - CASH IN ADMIN</h2>
-        
+    <div class="admin-card">
+        <h1>ADMIN PANEL - Dice Game Cash In</h1>
+        <p style="color: #636e72; font-size: 0.9rem;">Pamamahala ng pondo at balance ng mga manlalaro.</p>
+
         <table>
             <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Balance</th>
-                    <th>cash in</th>
-                    <th>date create</th>
+                    <th>Username / Player</th>
+                    <th>Current Balance</th>
+                    <th>Aksyon (Cash In)</th>
                 </tr>
             </thead>
             <tbody id="playerTableBody">
                 <tr>
-                    <td colspan="5" style="text-align: center;">GO...</td>
+                    <td colspan="3" style="text-align: center;">Kinukuha ang mga players mula sa database...</td>
                 </tr>
             </tbody>
         </table>
@@ -44,7 +49,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
@@ -59,55 +64,61 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function loadPlayers() {
-            const tableBody = document.getElementById("playerTableBody");
-            try {
-                const querySnapshot = await getDocs(collection(db, "players"));
-                tableBody.innerHTML = "";
+        const tableBody = document.getElementById("playerTableBody");
 
-                if (querySnapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">NOT AVAILABLE.</td></tr>`;
-                    return;
-                }
-
-                querySnapshot.forEach((documento) => {
-                    const data = documento.data();
-                    const dateFormatted = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString() : "Wala";
-                    const currentBalance = data.balance !== undefined ? data.balance : 0;
-
-                    const row = `<tr>
-                        <td>${data.username || 'N/A'}</td>
-                        <td>${data.password || 'N/A'}</td>
-                        <td style="font-weight: bold; color: #2d3436;">₱${currentBalance.toLocaleString()}</td>
-                        <td>
-                            <button class="karga-btn" onclick="addBalance('${documento.id}', 5)">+₱5</button>
-                            <button class="karga-btn" style="background:#0984e3;" onclick="addBalance('${documento.id}', 10)">+₱10</button>
-                        </td>
-                        <td>${dateFormatted}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-            } catch (error) {
-                console.error("Error sa pagkuha ng data: ", error);
-                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">warning...</td></tr>`;
+        // Real-time listener para sa 'players' collection sa Firebase
+        onSnapshot(collection(db, "players"), (snapshot) => {
+            if (snapshot.empty) {
+                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Walang nahanap na nakarehistrong players.</td></tr>`;
+                return;
             }
-        }
 
-        window.addBalance = async function(userId, amount) {
+            let rows = "";
+            snapshot.forEach((playerDoc) => {
+                const playerData = playerDoc.data();
+                const playerId = playerDoc.id;
+                const username = playerData.username || "Walang Pangalan";
+                const balance = playerData.balance || 0;
+
+                rows += `
+                    <tr>
+                        <td><strong>${username}</strong></td>
+                        <td style="color: #e17055; font-weight: bold;">₱${balance.toLocaleString()}</td>
+                        <td>
+                            <input type="number" id="amount-${playerId}" class="input-cash" placeholder="₱0" min="1">
+                            <button class="cashin-btn" onclick="cashInPlayer('${playerId}', '${username}')">Add</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = rows;
+        });
+
+        // Global function para magdagdag ng pondo sa player
+        window.cashInPlayer = async function(playerId, username) {
+            const inputElement = document.getElementById(`amount-${playerId}`);
+            const cashAmount = parseInt(inputElement.value);
+
+            if (!cashAmount || cashAmount <= 0) {
+                alert("Mangyaring maglagay ng tamang halaga ng pera para i-cash in!");
+                return;
+            }
+
             try {
-                const playerRef = doc(db, "players", userId);
+                const playerRef = doc(db, "players", playerId);
                 await updateDoc(playerRef, {
-                    balance: increment(amount)
+                    balance: increment(cashAmount)
                 });
-                alert(`Matagumpay na nakarga ang ₱${amount}!`);
-                loadPlayers();
+
+                alert(`Matagumpay na nadagdagan ng ₱${cashAmount} ang balance ni ${username}!`);
+                inputElement.value = ""; // Linisin ang input box pagkatapos mag-karga
             } catch (error) {
-                console.error("Error sa pagkarga: ", error);
-                alert("Hindi naisagawa ang pagkarga.");
+                console.error("Error sa pag-cash in: ", error);
+                alert("Nagkaroon ng problema sa pag-karga. Subukang muli.");
             }
         };
-
-        loadPlayers();
     </script>
 </body>
 </html>
+
+```
