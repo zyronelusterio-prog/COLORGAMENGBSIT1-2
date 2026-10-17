@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tl">
 <head>
@@ -96,4 +97,154 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, increment } from "
+        import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
+            authDomain: "colorgame-9e835.firebaseapp.com",
+            projectId: "colorgame-9e835",
+            storageBucket: "colorgame-9e835.firebasestorage.app",
+            messagingSenderId: "246164893744",
+            appId: "1:246164893744:web:eb6f326e958a89d13dbdf5",
+            measurementId: "G-Q59RJCZPC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const loggedId = localStorage.getItem("loggedPlayerId");
+        const loggedUser = localStorage.getItem("loggedUsername");
+
+        let currentBalance = 0;
+
+        const colorList = [
+            { name: "RED", hex: "#d63031" },
+            { name: "BLUE", hex: "#0984e3" },
+            { name: "YELLOW", hex: "#fdcb6e" },
+            { name: "GREEN", hex: "#00b894" },
+            { name: "PINK", hex: "#e84393" },
+            { name: "WHITE", hex: "#b2bec3" }
+        ];
+
+        if (loggedUser) {
+            document.getElementById("welcomeUser").innerText = "Color Game - " + loggedUser;
+        }
+
+        if (loggedId) {
+            onSnapshot(doc(db, "players", loggedId), (docSnap) => {
+                if (docSnap.exists()) {
+                    currentBalance = docSnap.data().balance || 0;
+                    document.getElementById("playerBalance").innerText = "₱" + currentBalance.toLocaleString();
+                }
+            });
+        }
+
+        window.rollDice = async function() {
+            const betInputs = document.querySelectorAll('.color-bet');
+            let bets = {};
+            let totalBet = 0;
+
+            // Kolektahin ang mga taya sa bawat kulay
+            betInputs.forEach(input => {
+                const amount = parseInt(input.value) || 0;
+                if (amount > 0) {
+                    const color = input.getAttribute('data-color');
+                    bets[color] = amount;
+                    totalBet += amount;
+                }
+            });
+
+            if (totalBet <= 0) {
+                alert("Maglagay muna ng taya sa kahit isang kulay!");
+                return;
+            }
+
+            if (totalBet > currentBalance) {
+                alert(`Kulang ang iyong balance! Kabuuang taya: ₱${totalBet}, Balance: ₱${currentBalance}`);
+                return;
+            }
+
+            const rollBtn = document.getElementById("rollBtn");
+            rollBtn.disabled = true;
+
+            const diceElements = [
+                document.getElementById("dice1"),
+                document.getElementById("dice2"),
+                document.getElementById("dice3")
+            ];
+
+            // Rolling animation effect para sa 3 Dice
+            let duration = 2000; 
+            let interval = setInterval(() => {
+                diceElements.forEach(dice => {
+                    const randomColor = colorList[Math.floor(Math.random() * colorList.length)];
+                    dice.style.backgroundColor = randomColor.hex;
+                    dice.innerText = randomColor.name;
+                });
+            }, 100);
+
+            setTimeout(async () => {
+                clearInterval(interval);
+
+                // Pagpili ng 3 winning colors
+                const resultColors = [
+                    colorList[Math.floor(Math.random() * colorList.length)],
+                    colorList[Math.floor(Math.random() * colorList.length)],
+                    colorList[Math.floor(Math.random() * colorList.length)]
+                ];
+
+                // I-apply ang result sa mga Dice boxes
+                diceElements.forEach((dice, index) => {
+                    dice.style.backgroundColor = resultColors[index].hex;
+                    dice.innerText = resultColors[index].name;
+                });
+
+                // Kalkulahin ang Panalo / Talo
+                let totalWinAmount = 0;
+                let totalLossAmount = 0;
+
+                const resultNames = resultColors.map(c => c.name);
+
+                for (let color in bets) {
+                    const betAmt = bets[color];
+                    // Bilangin kung ilang beses lumabas ang tinayang kulay sa 3 dice
+                    const matches = resultNames.filter(c => c === color).length;
+
+                    if (matches > 0) {
+                        // Panalo: Nakuha ang pusta + Pusta * bilang ng beses na lumabas
+                        totalWinAmount += (betAmt * matches);
+                    } else {
+                        // Talo sa kulay na ito
+                        totalLossAmount += betAmt;
+                    }
+                }
+
+                const netChange = totalWinAmount - totalLossAmount;
+                const playerRef = doc(db, "players", loggedId);
+
+                await updateDoc(playerRef, {
+                    balance: increment(netChange)
+                });
+
+                // Result prompt
+                if (netChange > 0) {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nNANALO KA ng ₱${netChange}!`);
+                } else if (netChange < 0) {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nNATALUAN KA ng ₱${Math.abs(netChange)}.`);
+                } else {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nTABO / EVEN (Bumalik lang ang iyong taya).`);
+                }
+
+                // Clear input boxes
+                betInputs.forEach(input => input.value = '');
+                rollBtn.disabled = false;
+
+            }, duration);
+        };
+
+        window.logout = function() {
+            localStorage.clear();
+        };
+    </script>
+</body>
+</html>
