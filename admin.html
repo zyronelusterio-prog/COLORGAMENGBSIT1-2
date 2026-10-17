@@ -38,7 +38,6 @@
         </table>
     </div>
 
-    <!-- Firebase Script para basahin ang listahan sa database -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -80,7 +79,7 @@
                 });
             } catch (error) {
                 console.error("Error sa pagkuha ng data: ", error);
-                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: red;">May error sa pagkonekta sa database.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: red;">May suliranin sa pagkonekta sa database.</td></tr>`;
             }
         }
 

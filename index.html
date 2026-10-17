@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Game</title>
+    <title>Color Game - Login at Sign Up</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -54,12 +54,10 @@
         </div>
     </div>
 
-    <!-- Firebase at Database Connection Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Ang iyong Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
             authDomain: "colorgame-9e835.firebaseapp.com",
@@ -73,8 +71,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Toggle mode kung gusto mo ring lagyan ng Login sa hinaharap
         let isSignUp = true;
+
         window.toggleMode = function() {
             isSignUp = !isSignUp;
             document.getElementById("formTitle").innerText = isSignUp ? "Mag-Sign Up" : "Mag-Sign In";
@@ -82,7 +80,6 @@
             document.getElementById("toggleMsg").innerText = isSignUp ? "Mayroon nang account?" : "Wala pang account?";
         };
 
-        // Function para i-save ang data sa Firebase kapag nag-click
         window.handleAuth = async function() {
             const usernameInput = document.getElementById("username");
             const passwordInput = document.getElementById("password");
@@ -95,20 +92,48 @@
                 return;
             }
 
-            try {
-                // Isine-save ito sa Firestore database sa collection na "players"
-                await addDoc(collection(db, "players"), {
-                    username: username,
-                    password: password,
-                    createdAt: new Date()
-                });
+            if (!isSignUp && username === "admin" && password === "admin123") {
+                window.location.href = "admin.html";
+                return;
+            }
 
-                alert("Matagumpay ang pag-sign up! Nakaimbak na sa database.");
+            try {
+                if (isSignUp) {
+                    const q = query(collection(db, "players"), where("username", "==", username));
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        alert("May gumagamit na ng username na ito! Pumili ng iba.");
+                        return;
+                    }
+
+                    await addDoc(collection(db, "players"), {
+                        username: username,
+                        password: password,
+                        createdAt: new Date()
+                    });
+
+                    alert("Matagumpay ang pag-sign up! Pwede ka nang mag-sign in.");
+                    toggleMode();
+                } else {
+                    const q = query(collection(db, "players"), where("username", "==", username), where("password", "==", password));
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        alert("Maling username o password!");
+                        return;
+                    }
+
+                    alert("Matagumpay na naka-login!");
+                    window.location.href = "player.html";
+                }
+
                 if(usernameInput) usernameInput.value = "";
                 if(passwordInput) passwordInput.value = "";
+
             } catch (error) {
-                console.error("Error sa pag-save: ", error);
-                alert("Nagka-problema sa pag-save. Subukan ulit.");
+                console.error("Error sa authentication: ", error);
+                alert("Mayroong suliranin sa sistema. Subukan muli.");
             }
         };
     </script>
