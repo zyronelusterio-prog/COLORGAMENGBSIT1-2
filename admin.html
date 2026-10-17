@@ -5,137 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Game - Admin Dashboard</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        h2 { margin: 0; color: #2d3436; }
-
-        .btn-logout {
-            background-color: #d63031;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-logout:hover { background-color: #b22222; }
-
-        /* User Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #0984e3;
-            color: white;
-        }
-
-        .action-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        input[type="number"] {
-            width: 100px;
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .btn-add {
-            background-color: #00b894;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-add:hover { background-color: #019875; }
-
-        .btn-deduct {
-            background-color: #e17055;
-            color: rgb(78, 34, 148);
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-deduct:hover { background-color: #d05030; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #0984e3; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .back-btn { display: inline-block; margin-bottom: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .back-btn:hover { background: #2d3436; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header">
-            <h2>⚙️ Admin Cash-In Dashboard</h2>
-            <button class="btn-logout" onclick="logout()">Log Out</button>
-        </div>
-
-        <p>PANEL</p>
-
+        <a href="index.html" class="back-btn">← Bumalik sa Login</a>
+        <h2>Admin Dashboard - Listahan ng mga Players</h2>
+        
         <table>
             <thead>
                 <tr>
                     <th>Username</th>
-                    <th>balance</th>
-                    <th> add or minus cash</th>
-                    <th>ACTION</th>
+                    <th>Password</th>
+                    <th>Petsa ng Pag-Sign Up</th>
                 </tr>
             </thead>
-            <tbody id="userTableBody">
-                <!-- REGISTERED PALYERS -->
+            <tbody id="playerTableBody">
+                <tr>
+                    <td colspan="3" style="text-align: center;">Kinukuha ang mga datos mula sa database...</td>
+                </tr>
             </tbody>
         </table>
     </div>
 
-    <script>
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (!currentUser || currentUser.role !== 'admin') {
-            alert("Aksyon na hindi pinahihintulutan! Mag-sign in muna bilang Admin.");
-            window.location.href = 'index.html';
+    <!-- Firebase Script para basahin ang listahan sa database -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
+            authDomain: "colorgame-9e835.firebaseapp.com",
+            projectId: "colorgame-9e835",
+            storageBucket: "colorgame-9e835.firebasestorage.app",
+            messagingSenderId: "246164893744",
+            appId: "1:246164893744:web:eb6f326e958a89d13dbdf5",
+            measurementId: "G-Q59RJCZPC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadPlayers() {
+            const tableBody = document.getElementById("playerTableBody");
+            try {
+                const querySnapshot = await getDocs(collection(db, "players"));
+                tableBody.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Wala pang nag-sign up.</td></tr>`;
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const dateFormatted = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString() : "Wala";
+                    
+                    const row = `<tr>
+                        <td>${data.username || 'N/A'}</td>
+                        <td>${data.password || 'N/A'}</td>
+                        <td>${dateFormatted}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error sa pagkuha ng data: ", error);
+                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: red;">May error sa pagkonekta sa database.</td></tr>`;
+            }
         }
 
-        function loadUsers() {
-            const users = JSON.parse(localStorage.getItem('users')) || {};
-            const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = '';
-
-            const userKeys = Object.keys(users);
-
-            if (userKeys.length === 0) {
+        loadPlayers();
+    </script>
+</body>
+</html>
