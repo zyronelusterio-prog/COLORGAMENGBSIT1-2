@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Game - Player Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        h2, h3 { margin: 0; color: #333; }
+
+        .btn-logout {
+            background-color: #d63031;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-logout:hover { background-color: #b22222; }
+
+        .balance-box {
+            background-color: #2d3436;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+       
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .color-item input {
+            width: 65px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .bg-red    { background-color: #e74c3c; }
+        .bg-blue   { background-color: #3498db; }
+        .bg-green  { background-color: #2ecc71; }
+        .bg-yellow { background-color: #f1c40f; color: #333; }
+        .bg-pink   { background-color: #e84393; }
+        .bg-white  { background-color: #ffffff; color: #333; border: 2px solid #ccc; }
+
+        .btn-roll {
+            background-color: #00b894;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-roll:hover { background-color: #019875; }
+
+        
+        .results-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+            text-align: center;
+        }
+
+        .dice-board {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .dice {
+            width: 65px;
+            height: 65px;
+            border-radius: 10px;
+            background-color: #e0e0e0;
+            border: 2px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .log-box {
+            font-size: 0.95rem;
+            color: #2d3436;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h3>HI PALARO NG BSIT 1-2 <span id="displayName" style="color: #0984e3;">Player</span>!</h3>
+            </div>
+            <button class="btn-logout" onclick="logout()">Log Out</button>
+        </div>
+
+        <div class="balance-box">
+            Balanse: ₱<span id="playerBalance">0.00</span>
+        </div>
+
+        <div class="color-grid">
+            <div class="color-item bg-red">
+                <span>Red</span>
+                <input type="number" id="bet-Red" min="0" value="0">
+            </div>
+            <div class="color-item bg-blue">
+                <span>Blue</span>
+                <input type="number" id="bet-Blue" min="0" value="0">
+            </div>
+            <div class="color-item bg-green">
+                <span>Green</span>
+                <input type="number" id="bet-Green" min="0" value="0">
+            </div>
+            <div class="color-item bg-yellow">
+                <span style="color:#333">Yellow</span>
+                <input type="number" id="bet-Yellow" min="0" value="0">
+            </div>
+            <div class="color-item bg-pink">
+                <span>Pink</span>
+                <input type="number" id="bet-Pink" min="0" value="0">
+            </div>
+            <div class="color-item bg-white">
+                <span style="color:#333">White</span>
+                <input type="number" id="bet-White" min="0" value="0">
+            </div>
+        </div>
+
+        <button class="btn-roll" onclick="rollGame()">ROLL</button>
+
+        <div class="results-section">
+            <h3>Result</h3>
+            <div class="dice-board">
+                <div id="dice1" class="dice">?</div>
+                <div id="dice2" class="dice">?</div>
+                <div id="dice3" class="dice">?</div>
+            </div>
+            <div id="gameLog" class="log-box">BET </div>
+        </div>
+    </div>
+
+    <script>
+        // Suriin kung naka-login ang player
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || currentUser.role !== 'player') {
+            alert("Kailangan mong mag-sign in muna!");
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('displayName').innerText = currentUser.username;
+
+        const colors = [
+            { name: 'Red', hex: '#e74c3c' },
+            { name: 'Blue', hex: '#3498db' },
+            { name: 'Green', hex: '#2ecc71' },
+            { name: 'Yellow', hex: '#f1c40f' },
+            { name: 'Pink', hex: '#e84393' },
+            { name: 'White', hex: '#ffffff' }
+        ];
+
+        function getLatestBalance() {
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+            return users[currentUser.username] ? users[currentUser.username].balance : 0;
+        }
+
+        function saveBalance(newBalance) {
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+            if (users[currentUser.username]) {
+                users[currentUser.username].balance = newBalance;
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser.balance = newBalance;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('playerBalance').innerText = getLatestBalance().toFixed(2);
+        }
+
+        updateUI();
+
+        function rollGame() {
+            let currentBal = getLatestBalance();
+            let totalBet = 0;
+            let bets = {};
+
+            colors.forEach(color => {
+                let val = parseInt(document.getElementById('bet-' + color.name).value) || 0;
+                bets[color.name] = val;
+                totalBet += val;
+            });
+
+            if (totalBet <= 0) {
+                alert("Maglagay muna ng taya sa kahit anong kulay!");
+                return;
+            }
+
+            if (totalBet > currentBal) {
+                alert("Kulang ang iyong balanse para sa kabuuang taya mo!");
+                return;
+            }
+
+           
+            currentBal -= totalBet;
+
+         
+            let rolledCounts = { Red: 0, Blue: 0, Green: 0, Yellow: 0, Pink: 0, White: 0 };
+            for (let i = 1; i <= 3; i++) {
+                let randIndex = Math.floor(Math.random() * colors.length);
+                let rolled = colors[randIndex];
+                rolledCounts[rolled.name]++;
+
+                let diceEl = document.getElementById('dice' + i);
+                diceEl.style.backgroundColor = rolled.hex;
+                diceEl.innerText = rolled.name;
+            }
+
+       
+            let totalWinnings = 0;
+            let resultMsg = [];
+
+            colors.forEach(color => {
+                let userBet = bets[color.name];
+                let hits = rolledCounts[color.name];
+
+                if (userBet > 0) {
+                    if (hits > 0) {
+                        let win = userBet * (hits + 1);
+                        totalWinnings += win;
+                        resultMsg.push(`${color.name} (${hits}x): Panalo ₱${win}`);
+                    } else {
+                        resultMsg.push(`${color.name}: Walang tama`);
+                    }
+                }
+            });
+
+            currentBal += totalWinnings;
+            saveBalance(currentBal);
+            updateUI();
+
+            let logBox = document.getElementById('gameLog');
+            if (totalWinnings > 0) {
+                logBox.innerHTML = `🎉 Nanalo ka ng kabuuang ₱${totalWinnings}! <br><small>${resultMsg.join(' | ')}</small>`;
+            } else {
+                logBox.innerHTML = `❌ Natalo ang iyong mga taya. Subukan ulit!`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
