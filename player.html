@@ -10,8 +10,8 @@
         h1 { color: #0984e3; margin-top: 0; font-size: 1.5rem; }
         .balance-box { background: #e17055; color: white; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 15px 0; }
         
-        /* Estilo ng Roleta Canvas */
-        .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto 15px auto; }
+        
+        .box-container { position: relative; width: 280px; height: 280px; margin: 0 auto 15px auto; }
         canvas { width: 100%; height: 100%; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); }
         .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #d63031; z-index: 10; }
 
@@ -35,10 +35,10 @@
 <body>
 
     <div class="card">
-        <h1 id="welcomeUser">Color Game Roleta</h1>
+        <h1 id="welcomeUser">BSIT 1-2</h1>
         
         <div class="balance-box">
-            Pondo: <span id="playerBalance">₱0</span>
+            BALANCE: <span id="playerBalance">₱0</span>
         </div>
 
         <!-- Mismong Roleta -->
@@ -48,24 +48,23 @@
         </div>
 
         <div>
-            <label style="font-weight: bold; color: #555;">Halaga ng Taya:</label>
-            <input type="number" id="betAmount" class="bet-input" placeholder="Ilagay ang taya (hal. 50)" min="1">
+            <label style="font-weight: bold; color: #555;">AMOUNT:</label>
+            <input type="number" id="betAmount" class="bet-input" placeholder="BET" min="1">
         </div>
 
-        <div style="font-weight: bold; color: #555; margin-top: 10px; text-align: left;">Piliin ang Kulay:</div>
+        <div style="font-weight: bold; color: #555; margin-top: 10px; text-align: left;">CHOOSE COLOR:</div>
         <div class="color-grid">
-            <div class="color-box red" onclick="selectColor('Pula', this)">PULA</div>
-            <div class="color-box blue" onclick="selectColor('Asul', this)">ASUL</div>
-            <div class="color-box yellow" onclick="selectColor('Dilaw', this)">DILAW</div>
-            <div class="color-box green" onclick="selectColor('Berde', this)">BERDE</div>
-            <div class="color-box pink" onclick="selectColor('Rosas', this)">ROSAS</div>
-            <div class="color-box white" onclick="selectColor('Puti', this)">PUTI</div>
+            <div class="color-box red" onclick="selectColor('Pula', this)">RED</div>
+            <div class="color-box blue" onclick="selectColor('Asul', this)">BLUE</div>
+            <div class="color-box yellow" onclick="selectColor('Dilaw', this)">YELLOW</div>
+            <div class="color-box green" onclick="selectColor('Berde', this)">GREEN</div>
+            <div class="color-box white" onclick="selectColor('Puti', this)">WHITE</div>
         </div>
 
-        <button class="btn-roll" id="rollBtn" onclick="spinWheel()">PAIIKUTIN ANG ROLETA</button>
+        <button class="btn-roll" id="rollBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
 
         <div>
-            <a href="index.html" class="logout-btn" onclick="logout()">Mag-Log Out</a>
+            <a href="index.html" class="logout-btn" onclick="logout()">Log Out</a>
         </div>
     </div>
 
@@ -89,19 +88,17 @@
         const loggedId = localStorage.getItem("loggedPlayerId");
         const loggedUser = localStorage.getItem("loggedUsername");
 
-        let currentBalance = 0;
+        let currentBalance =0;
         let selectedColor = "";
         let currentRotation = 0;
 
         const sectors = [
-            { name: "Pula", color: "#d63031" },
-            { name: "Asul", color: "#0984e3" },
-            { name: "Dilaw", color: "#fdcb6e" },
-            { name: "Berde", color: "#00b894" },
-            { name: "Rosas", color: "#e84393" },
-            { name: "Puti", color: "#b2bec3" },
-            { name: "Pula", color: "#d63031" },
-            { name: "Asul", color: "#0984e3" }
+            { name: "YELLOW", color: "#fdcb6e" },
+            { name: "GREEN", color: "#00b894" },
+            { name: "RED", color: "#e84393" },
+            { name: "WHITE", color: "#b2bec3" },
+            { name: "BLUE", color: "#0984e3" },
+        
         ];
 
         const canvas = document.getElementById("wheelCanvas");
@@ -159,11 +156,11 @@
             const betAmount = parseInt(betInput.value);
 
             if (!selectedColor) {
-                alert("Pumili muna ng kulay na tatayaan sa ibaba!");
+                alert("select color!");
                 return;
             }
             if (!betAmount || betAmount <= 0) {
-                alert("Maglagay ng tamang halaga ng taya!");
+                alert("BET AMOUNT!");
                 return;
             }
             if (betAmount > currentBalance) {
@@ -174,13 +171,13 @@
             const rollBtn = document.getElementById("rollBtn");
             rollBtn.disabled = true;
 
-            // Pagpili ng random na saklaw para sa iikot ng roleta
+           
             const randomSectorIndex = Math.floor(Math.random() * sectors.length);
-            const degreesPerSector = 360 / sectors.length;
+            const degreesPerSector = 280 / sectors.length;
             
             // Kalkulasyon para tumapat sa tuktok ang piniling sektor
-            const extraSpins = 5 * 360; 
-            const targetDegree = extraSpins + (360 - (randomSectorIndex * degreesPerSector + degreesPerSector / 2));
+            const extraSpins = 5 * 280; 
+            const targetDegree = extraSpins + (280 - (randomSectorIndex * degreesPerSector + degreesPerSector / 2));
             
             currentRotation += targetDegree;
             canvas.style.transform = `rotate(${currentRotation}deg)`;
@@ -194,12 +191,12 @@
                     await updateDoc(playerRef, {
                         balance: increment(winAmount)
                     });
-                    alert(`NANALO KA! Tumapat sa ${winningColor}. Nanalo ka ng ₱${winAmount}!`);
+                    alert(`WIN ${winningColor}. Nanalo ka ng ₱${winAmount}!`);
                 } else {
                     await updateDoc(playerRef, {
                         balance: increment(-betAmount)
                     });
-                    alert(`NATALO KA! Tumapat sa ${winningColor}. Nabawasan ka ng ₱${betAmount}.`);
+                    alert(`LOSE Tumapat sa ${winningColor}. Nabawasan ka ng ₱${betAmount}.`);
                 }
 
                 rollBtn.disabled = false;
