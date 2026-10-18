@@ -1,8 +1,3 @@
-Narito ang eksaktong **Admin Panel code** na ginawa at ini-sync para sa bagong **Dice Lobby** na Color Game code mo.
-
-Gamit ang code na ito, direktang makikita sa listahan ang mga estudyante o players, ang kanilang live balance, at mayroon itong **Cash In (Add)** button para madaling makapagkarga ng pondo ang admin na agad ding mag-a-update sa screen ng player.
-
-```html
 <!DOCTYPE html>
 <html lang="tl">
 <head>
@@ -29,7 +24,7 @@ Gamit ang code na ito, direktang makikita sa listahan ang mga estudyante o playe
 
     <div class="admin-card">
         <h1>ADMIN PANEL - Dice Game Cash In</h1>
-        <p style="color: #636e72; font-size: 0.9rem;">Pamamahala ng pondo at balance ng mga manlalaro.</p>
+        <p style="color: #636e72; font-size: 0.9rem;">EEEEEEEEEE.</p>
 
         <table>
             <thead>
@@ -41,7 +36,7 @@ Gamit ang code na ito, direktang makikita sa listahan ang mga estudyante o playe
             </thead>
             <tbody id="playerTableBody">
                 <tr>
-                    <td colspan="3" style="text-align: center;">Kinukuha ang mga players mula sa database...</td>
+                    <td colspan="3" style="text-align: center;">LOADING....</td>
                 </tr>
             </tbody>
         </table>
@@ -66,7 +61,7 @@ Gamit ang code na ito, direktang makikita sa listahan ang mga estudyante o playe
 
         const tableBody = document.getElementById("playerTableBody");
 
-        // Real-time listener para sa 'players' collection sa Firebase
+        
         onSnapshot(collection(db, "players"), (snapshot) => {
             if (snapshot.empty) {
                 tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Walang nahanap na nakarehistrong players.</td></tr>`;
@@ -94,7 +89,7 @@ Gamit ang code na ito, direktang makikita sa listahan ang mga estudyante o playe
             tableBody.innerHTML = rows;
         });
 
-        // Global function para magdagdag ng pondo sa player
+        
         window.cashInPlayer = async function(playerId, username) {
             const inputElement = document.getElementById(`amount-${playerId}`);
             const cashAmount = parseInt(inputElement.value);
@@ -111,7 +106,7 @@ Gamit ang code na ito, direktang makikita sa listahan ang mga estudyante o playe
                 });
 
                 alert(`Matagumpay na nadagdagan ng ₱${cashAmount} ang balance ni ${username}!`);
-                inputElement.value = ""; // Linisin ang input box pagkatapos mag-karga
+                inputElement.value = "";
             } catch (error) {
                 console.error("Error sa pag-cash in: ", error);
                 alert("Nagkaroon ng problema sa pag-karga. Subukang muli.");

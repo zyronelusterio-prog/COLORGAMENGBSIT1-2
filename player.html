@@ -1,15 +1,58 @@
-
 <!DOCTYPE html>
 <html lang="tl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Game - Dice Lobby</title>
+    <title>Color Game - BSIT 1-2 Dice Lobby</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; text-align: center; }
-        .card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 480px; margin: 0 auto; }
-        h1 { color: #0984e3; margin-top: 0; font-size: 1.5rem; }
-        .balance-box { background: #e17055; color: white; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 15px 0; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            /* Background picture ng BSIT 1-2 / Meme theme - Palitan ng tamang file name kung nasa folder mo */
+            background-image: url('bsit12_bg.jpg'); 
+            background-size: cover;          
+            background-position: center;     
+            background-repeat: no-repeat;    
+            background-attachment: fixed;    
+            margin: 0; 
+            padding: 20px; 
+            text-align: center; 
+        }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.92); 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
+            max-width: 480px; 
+            margin: 0 auto; 
+            border: 4px dashed #6c5ce7;
+        }
+
+        /* Boss Atan Meme Banner Style */
+        .boss-atan-banner {
+            background: #2d3436;
+            color: #fdcb6e;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border: 2px solid #fdcb6e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .boss-atan-banner img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        h1 { color: #0984e3; margin-top: 0; font-size: 1.6rem; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .balance-box { background: #e17055; color: white; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 15px 0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
         
         /* 3 Dice Boxes Style */
         .dice-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
@@ -17,14 +60,14 @@
             width: 80px; height: 80px; border-radius: 12px; 
             display: flex; justify-content: center; align-items: center; 
             font-size: 1.2rem; font-weight: bold; color: white; 
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.15); 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2); 
             background-color: #2d3436; text-shadow: 1px 1px 2px black;
             transition: transform 0.1s linear;
         }
 
         /* Color Betting Grid (Box Style) */
         .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .color-card { border-radius: 8px; padding: 10px 5px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-shadow: 1px 1px 2px black; }
+        .color-card { border-radius: 8px; padding: 10px 5px; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.2); text-shadow: 1px 1px 2px black; }
         .color-card label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.9rem; }
         .bet-input-box { width: 80%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-size: 0.9rem; font-weight: bold; box-sizing: border-box; }
 
@@ -36,7 +79,7 @@
         .pink { background-color: #e84393; }
         .white { background-color: #b2bec3; color: #333 !important; text-shadow: none !important; }
 
-        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4); }
         .btn-roll:hover { background: #5b4bc4; }
         .btn-roll:disabled { background: #b2bec3; cursor: not-allowed; }
         .logout-btn { display: inline-block; margin-top: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
@@ -45,7 +88,198 @@
 <body>
 
     <div class="card">
-        <h1 id="welcomeUser">BSIT 1-2</h1>
+        <!-- Meme Pic / Banner ni Boss Atan -->
+        <div class="boss-atan-banner">
+            <!-- Palitan ang 'boss_atan.jpg' ng actual filename ng meme pic ni Boss Atan sa folder niyo -->
+            <img src="<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Game - BSIT 1-2 Dice Lobby</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            /* Background picture ng BSIT 1-2 / Meme theme - Palitan ng tamang file name kung nasa folder mo */
+            background-image: url('bsit12_bg.jpg'); 
+            background-size: cover;          
+            background-position: center;     
+            background-repeat: no-repeat;    
+            background-attachment: fixed;    
+            margin: 0; 
+            padding: 20px; 
+            text-align: center; 
+        }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.92); 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
+            max-width: 480px; 
+            margin: 0 auto; 
+            border: 4px dashed #6c5ce7;
+        }
+
+        /* Boss Atan Meme Banner Style */
+        .boss-atan-banner {
+            background: #2d3436;
+            color: #fdcb6e;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border: 2px solid #fdcb6e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .boss-atan-banner img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        h1 { color: #0984e3; margin-top: 0; font-size: 1.6rem; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .balance-box { background: #e17055; color: white; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 15px 0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        
+        /* 3 Dice Boxes Style */
+        .dice-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .dice-box { 
+            width: 80px; height: 80px; border-radius: 12px; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 1.2rem; font-weight: bold; color: white; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2); 
+            background-color: #2d3436; text-shadow: 1px 1px 2px black;
+            transition: transform 0.1s linear;
+        }
+
+        /* Color Betting Grid (Box Style) */
+        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .color-card { border-radius: 8px; padding: 10px 5px; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.2); text-shadow: 1px 1px 2px black; }
+        .color-card label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.9rem; }
+        .bet-input-box { width: 80%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-size: 0.9rem; font-weight: bold; box-sizing: border-box; }
+
+        /* Kulay ng mga Box */
+        .red { background-color: #d63031; }
+        .blue { background-color: #0984e3; }
+        .yellow { background-color: #fdcb6e; color: #333 !important; text-shadow: none !important; }
+        .green { background-color: #00b894; }
+        .pink { background-color: #e84393; }
+        .white { background-color: #b2bec3; color: #333 !important; text-shadow: none !important; }
+
+        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4); }
+        .btn-roll:hover { background: #5b4bc4; }
+        .btn-roll:disabled { background: #b2bec3; cursor: not-allowed; }
+        .logout-btn { display: inline-block; margin-top: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- Meme Pic / Banner ni Boss Atan -->
+        <div class="boss-atan-banner">
+            <!-- Palitan ang 'boss_atan.jpg' ng actual filename ng meme pic ni Boss Atan sa folder niyo -->
+            <img src="<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Game - BSIT 1-2 PAKAK</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+
+
+            background-image: url('https://pin.it/k4C8Ifd0z'); 
+            background-size: cover;          
+            background-position: center;     
+            background-repeat: no-repeat;    
+            background-attachment: fixed;    
+            margin: 0; 
+            padding: 20px; 
+            text-align: center; 
+        }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.92); 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
+            max-width: 480px; 
+            margin: 0 auto; 
+            border: 4px dashed #6c5ce7;
+        }
+
+        .boss-atan-banner {
+            background: #2d3436;
+            color: #fdcb6e;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border: 2px solid #fdcb6e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .boss-atan-banner img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        h1 { color: #0984e3; margin-top: 0; font-size: 1.6rem; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .balance-box { background: #e17055; color: white; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 15px 0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        
+    
+        .dice-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .dice-box { 
+            width: 80px; height: 80px; border-radius: 12px; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 1.2rem; font-weight: bold; color: white; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.2); 
+            background-color: #2d3436; text-shadow: 1px 1px 2px black;
+            transition: transform 0.1s linear;
+        }
+
+        .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .color-card { border-radius: 8px; padding: 10px 5px; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.2); text-shadow: 1px 1px 2px black; }
+        .color-card label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.9rem; }
+        .bet-input-box { width: 80%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-size: 0.9rem; font-weight: bold; box-sizing: border-box; }
+
+        .red { background-color: #d63031; }
+        .blue { background-color: #0984e3; }
+        .yellow { background-color: #fdcb6e; color: #333 !important; text-shadow: none !important; }
+        .green { background-color: #00b894; }
+        .pink { background-color: #e84393; }
+        .white { background-color: #b2bec3; color: #333 !important; text-shadow: none !important; }
+
+        .btn-roll { width: 100%; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4); }
+        .btn-roll:hover { background: #5b4bc4; }
+        .btn-roll:disabled { background: #b2bec3; cursor: not-allowed; }
+        .logout-btn { display: inline-block; margin-top: 20px; padding: 8px 15px; background: #636e72; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+    
+        <div class="boss-atan-banner">
+          
+            <img src="spongebobwarehouse" alt="Boss Atan Meme" onerror="this.src='https:pin.it/k4C8Ifd0z">
+            <span>BOSS ATAN APPROVED (BSIT 1-2)</span>
+        </div>
+
+        <h1 id="welcomeUser">BSIT 1-2 COLOR GAME</h1>
         
         <div class="balance-box">
             BALANCE: <span id="playerBalance">₱0</span>
@@ -58,9 +292,9 @@
             <div class="dice-box" id="dice3">?</div>
         </div>
 
-        <div style="font-weight: bold; color: #555; margin-top: 10px; text-align: left;">ILAGAY ANG TAYA SA MGA KULAY:</div>
+        <div style="font-weight: bold; color: #333; margin-top: 10px; text-align: left;">BET:</div>
         
-        <!-- Multi-Bet Color Boxes -->
+       
         <div class="color-grid">
             <div class="color-card red">
                 <label>RED</label>
@@ -88,7 +322,7 @@
             </div>
         </div>
 
-        <button class="btn-roll" id="rollBtn" onclick="rollDice()">ROLL DICE</button>
+        <button class="btn-roll" id="rollBtn" onclick="rollDice()">ROLL DICE </button>
 
         <div>
             <a href="index.html" class="logout-btn" onclick="logout()">Log Out</a>
@@ -127,7 +361,7 @@
         ];
 
         if (loggedUser) {
-            document.getElementById("welcomeUser").innerText = "Color Game - " + loggedUser;
+            document.getElementById("welcomeUser").innerText = "BSIT 1-2 - " + loggedUser;
         }
 
         if (loggedId) {
@@ -144,7 +378,6 @@
             let bets = {};
             let totalBet = 0;
 
-            // Kolektahin ang mga taya sa bawat kulay
             betInputs.forEach(input => {
                 const amount = parseInt(input.value) || 0;
                 if (amount > 0) {
@@ -155,7 +388,7 @@
             });
 
             if (totalBet <= 0) {
-                alert("Maglagay muna ng taya sa kahit isang kulay!");
+                alert("BET AMOUNT WHAT DO YOU WANT");
                 return;
             }
 
@@ -173,7 +406,6 @@
                 document.getElementById("dice3")
             ];
 
-            // Rolling animation effect para sa 3 Dice
             let duration = 2000; 
             let interval = setInterval(() => {
                 diceElements.forEach(dice => {
@@ -186,35 +418,28 @@
             setTimeout(async () => {
                 clearInterval(interval);
 
-                // Pagpili ng 3 winning colors
                 const resultColors = [
                     colorList[Math.floor(Math.random() * colorList.length)],
                     colorList[Math.floor(Math.random() * colorList.length)],
                     colorList[Math.floor(Math.random() * colorList.length)]
                 ];
 
-                // I-apply ang result sa mga Dice boxes
                 diceElements.forEach((dice, index) => {
                     dice.style.backgroundColor = resultColors[index].hex;
                     dice.innerText = resultColors[index].name;
                 });
 
-                // Kalkulahin ang Panalo / Talo
                 let totalWinAmount = 0;
                 let totalLossAmount = 0;
-
                 const resultNames = resultColors.map(c => c.name);
 
                 for (let color in bets) {
                     const betAmt = bets[color];
-                    // Bilangin kung ilang beses lumabas ang tinayang kulay sa 3 dice
                     const matches = resultNames.filter(c => c === color).length;
 
                     if (matches > 0) {
-                        // Panalo: Nakuha ang pusta + Pusta * bilang ng beses na lumabas
                         totalWinAmount += (betAmt * matches);
                     } else {
-                        // Talo sa kulay na ito
                         totalLossAmount += betAmt;
                     }
                 }
@@ -226,16 +451,403 @@
                     balance: increment(netChange)
                 });
 
-                // Result prompt
                 if (netChange > 0) {
-                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nNANALO KA ng ₱${netChange}!`);
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nWIN ₱${netChange} kay Boss Atan!`);
                 } else if (netChange < 0) {
-                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nNATALUAN KA ng ₱${Math.abs(netChange)}.`);
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nLOSE ₱${Math.abs(netChange)}.`);
+                } else {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nBALIK TAYA`);
+                }
+
+                betInputs.forEach(input => input.value = '');
+                rollBtn.disabled = false;
+
+            }, duration);
+        };
+
+        window.logout = function() {
+            localStorage.clear();
+        };
+    </script>
+</body>
+</html>" alt="Boss Atan Meme" onerror="this.src='https://pin.it/k4C8Ifd0z'">
+            <span> (BSIT 1-2)</span>
+        </div>
+
+        <h1 id="welcomeUser">BSIT 1-2 COLOR GAME</h1>
+        
+        <div class="balance-box">
+            BALANCE: <span id="playerBalance">₱0</span>
+        </div>
+
+        <div class="dice-container">
+            <div class="dice-box" id="dice1">?</div>
+            <div class="dice-box" id="dice2">?</div>
+            <div class="dice-box" id="dice3">?</div>
+        </div>
+
+        <div style="font-weight: bold; color: #333; margin-top: 10px; text-align: left;">ILAGAY ANG TAYA SA MGA KULAY:</div>
+        
+        <!-- Multi-Bet Color Boxes -->
+        <div class="color-grid">
+            <div class="color-card red">
+                <label>RED</label>
+                <input type="number" class="bet-input-box color-bet" data-color="RED" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card blue">
+                <label>BLUE</label>
+                <input type="number" class="bet-input-box color-bet" data-color="BLUE" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card yellow">
+                <label>YELLOW</label>
+                <input type="number" class="bet-input-box color-bet" data-color="YELLOW" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card green">
+                <label>GREEN</label>
+                <input type="number" class="bet-input-box color-bet" data-color="GREEN" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card pink">
+                <label>PINK</label>
+                <input type="number" class="bet-input-box color-bet" data-color="PINK" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card white">
+                <label>WHITE</label>
+                <input type="number" class="bet-input-box color-bet" data-color="WHITE" placeholder="₱0" min="0">
+            </div>
+        </div>
+
+        <button class="btn-roll" id="rollBtn" onclick="rollDice()">ROLL DICE (BOSS ATAN LUCK)</button>
+
+        <div>
+            <a href="index.html" class="logout-btn" onclick="logout()">Log Out</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
+            authDomain: "colorgame-9e835.firebaseapp.com",
+            projectId: "colorgame-9e835",
+            storageBucket: "colorgame-9e835.firebasestorage.app",
+            messagingSenderId: "246164893744",
+            appId: "1:246164893744:web:eb6f326e958a89d13dbdf5",
+            measurementId: "G-Q59RJCZPC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const loggedId = localStorage.getItem("loggedPlayerId");
+        const loggedUser = localStorage.getItem("loggedUsername");
+
+        let currentBalance = 0;
+
+        const colorList = [
+            { name: "RED", hex: "#d63031" },
+            { name: "BLUE", hex: "#0984e3" },
+            { name: "YELLOW", hex: "#fdcb6e" },
+            { name: "GREEN", hex: "#00b894" },
+            { name: "PINK", hex: "#e84393" },
+            { name: "WHITE", hex: "#b2bec3" }
+        ];
+
+        if (loggedUser) {
+            document.getElementById("welcomeUser").innerText = "BSIT 1-2 - " + loggedUser;
+        }
+
+        if (loggedId) {
+            onSnapshot(doc(db, "players", loggedId), (docSnap) => {
+                if (docSnap.exists()) {
+                    currentBalance = docSnap.data().balance || 0;
+                    document.getElementById("playerBalance").innerText = "₱" + currentBalance.toLocaleString();
+                }
+            });
+        }
+
+        window.rollDice = async function() {
+            const betInputs = document.querySelectorAll('.color-bet');
+            let bets = {};
+            let totalBet = 0;
+
+            betInputs.forEach(input => {
+                const amount = parseInt(input.value) || 0;
+                if (amount > 0) {
+                    const color = input.getAttribute('data-color');
+                    bets[color] = amount;
+                    totalBet += amount;
+                }
+            });
+
+            if (totalBet <= 0) {
+                alert("Maglagay muna ng taya sa kahit isang kulay, utos ni Boss Atan!");
+                return;
+            }
+
+            if (totalBet > currentBalance) {
+                alert(`Kulang ang iyong balance! Kabuuang taya: ₱${totalBet}, Balance: ₱${currentBalance}`);
+                return;
+            }
+
+            const rollBtn = document.getElementById("rollBtn");
+            rollBtn.disabled = true;
+
+            const diceElements = [
+                document.getElementById("dice1"),
+                document.getElementById("dice2"),
+                document.getElementById("dice3")
+            ];
+
+            let duration = 2000; 
+            let interval = setInterval(() => {
+                diceElements.forEach(dice => {
+                    const randomColor = colorList[Math.floor(Math.random() * colorList.length)];
+                    dice.style.backgroundColor = randomColor.hex;
+                    dice.innerText = randomColor.name;
+                });
+            }, 100);
+
+            setTimeout(async () => {
+                clearInterval(interval);
+
+                const resultColors = [
+                    colorList[Math.floor(Math.random() * colorList.length)],
+                    colorList[Math.floor(Math.random() * colorList.length)],
+                    colorList[Math.floor(Math.random() * colorList.length)]
+                ];
+
+                diceElements.forEach((dice, index) => {
+                    dice.style.backgroundColor = resultColors[index].hex;
+                    dice.innerText = resultColors[index].name;
+                });
+
+                let totalWinAmount = 0;
+                let totalLossAmount = 0;
+                const resultNames = resultColors.map(c => c.name);
+
+                for (let color in bets) {
+                    const betAmt = bets[color];
+                    const matches = resultNames.filter(c => c === color).length;
+
+                    if (matches > 0) {
+                        totalWinAmount += (betAmt * matches);
+                    } else {
+                        totalLossAmount += betAmt;
+                    }
+                }
+
+                const netChange = totalWinAmount - totalLossAmount;
+                const playerRef = doc(db, "players", loggedId);
+
+                await updateDoc(playerRef, {
+                    balance: increment(netChange)
+                });
+
+                if (netChange > 0) {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nNICE! Nanalo ka ng ₱${netChange} kay Boss Atan!`);
+                } else if (netChange < 0) {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nAYUSIN MO! Natalo ka ng ₱${Math.abs(netChange)}.`);
                 } else {
                     alert(`RESULTA: ${resultNames.join(" | ")}\n\nTABO / EVEN (Bumalik lang ang iyong taya).`);
                 }
 
-                // Clear input boxes
+                betInputs.forEach(input => input.value = '');
+                rollBtn.disabled = false;
+
+            }, duration);
+        };
+
+        window.logout = function() {
+            localStorage.clear();
+        };
+    </script>
+</body>
+</html>" alt="Boss Atan Meme" onerror="this.src='https://via.placeholder.com/40'">
+            <span>BOSS ATAN APPROVED 🔥 (BSIT 1-2)</span>
+        </div>
+
+        <h1 id="welcomeUser">BSIT 1-2 COLOR GAME</h1>
+        
+        <div class="balance-box">
+            BALANCE: <span id="playerBalance">₱0</span>
+        </div>
+
+        <!-- 3 Dice Boxes -->
+        <div class="dice-container">
+            <div class="dice-box" id="dice1">?</div>
+            <div class="dice-box" id="dice2">?</div>
+            <div class="dice-box" id="dice3">?</div>
+        </div>
+
+        <div style="font-weight: bold; color: #333; margin-top: 10px; text-align: left;">ILAGAY ANG TAYA SA MGA KULAY:</div>
+        
+        <!-- Multi-Bet Color Boxes -->
+        <div class="color-grid">
+            <div class="color-card red">
+                <label>RED</label>
+                <input type="number" class="bet-input-box color-bet" data-color="RED" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card blue">
+                <label>BLUE</label>
+                <input type="number" class="bet-input-box color-bet" data-color="BLUE" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card yellow">
+                <label>YELLOW</label>
+                <input type="number" class="bet-input-box color-bet" data-color="YELLOW" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card green">
+                <label>GREEN</label>
+                <input type="number" class="bet-input-box color-bet" data-color="GREEN" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card pink">
+                <label>PINK</label>
+                <input type="number" class="bet-input-box color-bet" data-color="PINK" placeholder="₱0" min="0">
+            </div>
+            <div class="color-card white">
+                <label>WHITE</label>
+                <input type="number" class="bet-input-box color-bet" data-color="WHITE" placeholder="₱0" min="0">
+            </div>
+        </div>
+
+        <button class="btn-roll" id="rollBtn" onclick="rollDice()">ROLL DICE (BOSS ATAN LUCK)</button>
+
+        <div>
+            <a href="index.html" class="logout-btn" onclick="logout()">Log Out</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_oyXSh2lW329AWuyaE8kixGix6nFas",
+            authDomain: "colorgame-9e835.firebaseapp.com",
+            projectId: "colorgame-9e835",
+            storageBucket: "colorgame-9e835.firebasestorage.app",
+            messagingSenderId: "246164893744",
+            appId: "1:246164893744:web:eb6f326e958a89d13dbdf5",
+            measurementId: "G-Q59RJCZPC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const loggedId = localStorage.getItem("loggedPlayerId");
+        const loggedUser = localStorage.getItem("loggedUsername");
+
+        let currentBalance = 0;
+
+        const colorList = [
+            { name: "RED", hex: "#d63031" },
+            { name: "BLUE", hex: "#0984e3" },
+            { name: "YELLOW", hex: "#fdcb6e" },
+            { name: "GREEN", hex: "#00b894" },
+            { name: "PINK", hex: "#e84393" },
+            { name: "WHITE", hex: "#b2bec3" }
+        ];
+
+        if (loggedUser) {
+            document.getElementById("welcomeUser").innerText = "BSIT 1-2 - " + loggedUser;
+        }
+
+        if (loggedId) {
+            onSnapshot(doc(db, "players", loggedId), (docSnap) => {
+                if (docSnap.exists()) {
+                    currentBalance = docSnap.data().balance || 0;
+                    document.getElementById("playerBalance").innerText = "₱" + currentBalance.toLocaleString();
+                }
+            });
+        }
+
+        window.rollDice = async function() {
+            const betInputs = document.querySelectorAll('.color-bet');
+            let bets = {};
+            let totalBet = 0;
+
+            betInputs.forEach(input => {
+                const amount = parseInt(input.value) || 0;
+                if (amount > 0) {
+                    const color = input.getAttribute('data-color');
+                    bets[color] = amount;
+                    totalBet += amount;
+                }
+            });
+
+            if (totalBet <= 0) {
+                alert("Maglagay muna ng taya sa kahit isang kulay, utos ni Boss Atan!");
+                return;
+            }
+
+            if (totalBet > currentBalance) {
+                alert(`Kulang ang iyong balance! Kabuuang taya: ₱${totalBet}, Balance: ₱${currentBalance}`);
+                return;
+            }
+
+            const rollBtn = document.getElementById("rollBtn");
+            rollBtn.disabled = true;
+
+            const diceElements = [
+                document.getElementById("dice1"),
+                document.getElementById("dice2"),
+                document.getElementById("dice3")
+            ];
+
+            let duration = 2000; 
+            let interval = setInterval(() => {
+                diceElements.forEach(dice => {
+                    const randomColor = colorList[Math.floor(Math.random() * colorList.length)];
+                    dice.style.backgroundColor = randomColor.hex;
+                    dice.innerText = randomColor.name;
+                });
+            }, 100);
+
+            setTimeout(async () => {
+                clearInterval(interval);
+
+                const resultColors = [
+                    colorList[Math.floor(Math.random() * colorList.length)],
+                    colorList[Math.floor(Math.random() * colorList.length)],
+                    colorList[Math.floor(Math.random() * colorList.length)]
+                ];
+
+                diceElements.forEach((dice, index) => {
+                    dice.style.backgroundColor = resultColors[index].hex;
+                    dice.innerText = resultColors[index].name;
+                });
+
+                let totalWinAmount = 0;
+                let totalLossAmount = 0;
+                const resultNames = resultColors.map(c => c.name);
+
+                for (let color in bets) {
+                    const betAmt = bets[color];
+                    const matches = resultNames.filter(c => c === color).length;
+
+                    if (matches > 0) {
+                        totalWinAmount += (betAmt * matches);
+                    } else {
+                        totalLossAmount += betAmt;
+                    }
+                }
+
+                const netChange = totalWinAmount - totalLossAmount;
+                const playerRef = doc(db, "players", loggedId);
+
+                await updateDoc(playerRef, {
+                    balance: increment(netChange)
+                });
+
+                if (netChange > 0) {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nNICE! Nanalo ka ng ₱${netChange} kay Boss Atan!`);
+                } else if (netChange < 0) {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nAYUSIN MO! Natalo ka ng ₱${Math.abs(netChange)}.`);
+                } else {
+                    alert(`RESULTA: ${resultNames.join(" | ")}\n\nTABO / EVEN (Bumalik lang ang iyong taya).`);
+                }
+
                 betInputs.forEach(input => input.value = '');
                 rollBtn.disabled = false;
 
